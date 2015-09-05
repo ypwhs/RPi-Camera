@@ -20,10 +20,8 @@ class Reader(threading.Thread):
 
     def run(self):
         # while True:
-        print "Send jpeg"
         self.client.sendall(jpeg)
         self.client.close()
-        print "Finished jpeg"
 
 
 class Listener(threading.Thread):
@@ -35,10 +33,8 @@ class Listener(threading.Thread):
         self.sock.listen(0)
 
     def run(self):
-        print("listener started")
         while True:
             client = self.sock.accept()
-            print("accept a connect")
             reader = Reader(client[0])
             reader.setDaemon(True)
             reader.start()
