@@ -6,20 +6,29 @@ import PIL.Image as Image
 import StringIO
 import socket
 import threading
+import time
 
 capture = cv2.VideoCapture(0)
-capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 640)
-capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
+capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 320)
+capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
+
+frame = 0
+lastframe = 0
+newimg = 0
 
 
 class Reader(threading.Thread):
     def __init__(self, client):
         threading.Thread.__init__(self)
         self.client = client
-        print self.client
+        global frame
+        frame += 1
 
     def run(self):
-        # while True:
+        global newimg
+        while newimg == 0:
+            time.sleep(0.001)
+        newimg = 0
         self.client.sendall(jpeg)
         self.client.close()
 
@@ -43,6 +52,18 @@ listener = Listener()
 listener.setDaemon(True)
 listener.start()
 
+
+def displayfps():
+    while True:
+        global frame, lastframe
+        print "FPS:", frame - lastframe
+        lastframe = frame
+        time.sleep(1)
+
+fpsthread = threading.Thread(target=displayfps)
+fpsthread.setDaemon(True)
+fpsthread.start()
+
 while True:
     ret, img = capture.read()  # 从摄像头读取图片
     cv2.imshow('Video', img)  # 显示图片
@@ -53,6 +74,7 @@ while True:
     image.save(buf, format="JPEG")  # 将图片以JPEG格式写入StringIO
     jpeg = buf.getvalue()  # 获取JPEG图片内容
     buf.close()  # 关闭StringIO
+    newimg = 1
     if key == 27:  # ESC
         break
     elif key == 32:  # Space
