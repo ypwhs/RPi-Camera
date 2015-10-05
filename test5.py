@@ -12,7 +12,7 @@ capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
 while True:
     ret, img = capture.read()   # 从摄像头读取图片
     cv2.imshow('Video', img)    # 显示图片
-    key = cv2.waitKey(30)&0xFF
+    key = cv2.waitKey(30) & 0xFF
     if key == 27:   # ESC
         break
     elif key == 32:  # Space
