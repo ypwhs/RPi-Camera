@@ -22,10 +22,10 @@ while True:
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower, upper)
     kernel = np.ones((5, 5), np.uint8)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)   # kill the noise
-    mask = cv2.medianBlur(mask, 7)  # smooth
+    # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)   # kill the noise
+    # mask = cv2.medianBlur(mask, 7)  # smooth
     kernel = np.ones((25, 25), np.uint8)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)  # fill the black
+    # mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)  # fill the black
     res = cv2.bitwise_and(frame, frame, mask=mask)
     cv2.imshow('raw', frame)
     cv2.imshow('cut', res)
