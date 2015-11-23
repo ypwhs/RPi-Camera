@@ -19,10 +19,27 @@ newimg = 0
 
 
 ser = serial.Serial("/dev/ttyAMA0", 115200)
-ser.bytesize=8
-ser.stopbits=1
+ser.bytesize = 8
+ser.stopbits = 1
 
-class Reader(threading.Thread):
+
+class Listener8080(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.bind(('', 8080))
+        self.sock.listen(0)
+
+    def run(self):
+        while True:
+            client = self.sock.accept()
+            sender = Sender8080(client[0])
+            sender.setDaemon(True)
+            sender.start()
+
+
+class Sender8080(threading.Thread):
     def __init__(self, client):
         threading.Thread.__init__(self)
         self.client = client
@@ -37,8 +54,28 @@ class Reader(threading.Thread):
         self.client.sendall(jpeg)
         self.client.close()
 
-class Reader2(threading.Thread):
-    def __init__(self,client):
+
+class Listener8090(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.bind(('', 8090))
+        self.sock.listen(0)
+
+    def run(self):
+        while True:
+            client = self.sock.accept()
+            reader = Reader8090(client[0])
+            reader.setDaemon(True)
+            reader.start()
+            sender = Sender8090(client[0])
+            sender.setDaemon(True)
+            sender.start()
+
+
+class Reader8090(threading.Thread):
+    def __init__(self, client):
         threading.Thread.__init__(self)
         self.client = client
 
@@ -50,43 +87,26 @@ class Reader2(threading.Thread):
                 print data
 
 
-class Listener(threading.Thread):
-    def __init__(self):
+class Sender8090(threading.Thread):
+    def __init__(self, client):
         threading.Thread.__init__(self)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind(('', 8080))
-        self.sock.listen(0)
+        self.client = client
 
     def run(self):
         while True:
-            client = self.sock.accept()
-            reader = Reader(client[0])
-            reader.setDaemon(True)
-            reader.start()
+            data = ser.read(1)
+            if data != "":
+                self.client.write(data)
 
-class Listener2(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.sock.setsockopt(socket.SOL_SOCKET , socket.SO_REUSEADDR ,1)
-        self.sock.bind(('',8090))
-        self.sock.listen(0)
 
-    def run(self):
-        while True:
-            client = self.sock.accept()
-            reader = Reader2(client[0])
-            reader.setDaemon(True)
-            reader.start()
-
-listener = Listener()
+listener = Listener8080()
 listener.setDaemon(True)
 listener.start()
 
-listener2 = Listener2()
+listener2 = Listener8090()
 listener2.setDaemon(True)
 listener2.start()
+
 
 def displayfps():
     while True:
@@ -101,7 +121,7 @@ fpsthread.start()
 
 while True:
     ret, img = capture.read()  # 从摄像头读取图片
-    #cv2.imshow('Video', img)  # 显示图片
+    # cv2.imshow('Video', img)  # 显示图片
     key = cv2.waitKey(30) & 0xFF
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # 将图片从BGR转为RGB
     image = Image.fromarray(img)  # 将图片转为Image对象
