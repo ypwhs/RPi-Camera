@@ -9,7 +9,7 @@ color = np.uint8([[[111, 36, 0]]])
 hsv_color = cv2.cvtColor(color, cv2.COLOR_BGR2HSV)
 
 # define range of blue color in HSV
-lower = np.array([hsv_color[0][0][0] - 10, 100, 100])
+lower = np.array([hsv_color[0][0][0] - 10, 100, 80])
 upper = np.array([hsv_color[0][0][0] + 10, 255, 255])
 print lower
 
