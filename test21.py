@@ -7,9 +7,9 @@ from matplotlib import pylab as pl
 eye = cv2.imread("face/eye2.png", -1)
 nose = cv2.imread("face/nose1.png", -1)
 mouth = cv2.imread("face/mouth4.png", -1)
-eye = cv2.resize(eye, None, fx=0.18, fy=0.16, interpolation=cv2.INTER_CUBIC)
-nose = cv2.resize(nose, None, fx=0.14, fy=0.14, interpolation=cv2.INTER_CUBIC)
-mouth = cv2.resize(mouth, None, fx=0.18, fy=0.12, interpolation=cv2.INTER_CUBIC)
+eye = cv2.resize(eye, None, fx=0.18, fy=0.16)
+nose = cv2.resize(nose, None, fx=0.14, fy=0.14)
+mouth = cv2.resize(mouth, None, fx=0.18, fy=0.12)
 face = np.zeros((240, 320, 4), np.uint8)
 face[:] = 255
 
