@@ -5,10 +5,10 @@
 [installopencv.sh](installopencv.sh)
 
 ``` shell
-sudo apt-get update
-sudo apt-get upgrade
 sudo rpi-update
-sudo apt-get install libcv-dev libopencv-dev python-dev python-opencv python-imaging python-pip
+sudo apt-get update
+sudo apt-get -y upgrade
+sudo apt-get -y install libcv-dev libopencv-dev python-dev python-opencv python-imaging python-pip
 sudo pip install numpy
 ```
 
