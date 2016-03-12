@@ -12,8 +12,8 @@ while True:
     faces = face_cascade.detectMultiScale(gray, 1.2, 5)
     for (x, y, w, h) in faces:
         cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        roi = img[y:y + h, x:x + w]
-        cv2.imshow('face', roi)
+        # roi = img[y:y + h, x:x + w]
+        # cv2.imshow('face', roi)
     cv2.imshow('Video', img)
     key = cv2.waitKey(30)
     key &= 0xFF
