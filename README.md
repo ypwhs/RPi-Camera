@@ -518,3 +518,74 @@ while True:
 cv2.destroyAllWindows()
 
 ```
+
+## 身体检测（haarcascade_fullbody）
+
+[test17.py](test17.py)
+
+```python
+import cv2
+
+capture = cv2.VideoCapture(0)
+capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 320)
+capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
+classifier = cv2.CascadeClassifier('haarcascade_fullbody.xml')
+
+while True:
+    ret, img = capture.read()
+    gray = cv2.cvtColor(img, cv2.cv.CV_RGB2GRAY)
+    bodys = classifier.detectMultiScale(gray, 1.2, 5)
+    for (x, y, w, h) in bodys:
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        roi = img[y:y + h, x:x + w]
+        cv2.imshow('body', roi)
+    cv2.imshow('Video', img)
+    key = cv2.waitKey(30)
+    key &= 0xFF
+    if key == 27:
+        break
+    elif key == 32:
+        print img
+
+capture.release()
+
+```
+
+## 图像匹配（SIFT）
+
+[test25.py](test25.py)
+
+```python
+import numpy as np
+import cv2
+from matplotlib import pyplot as plt
+
+img1 = cv2.imread('face.png', 0)  # queryImage
+img2 = cv2.imread('full.png', 0)  # trainImage
+
+# Initiate SIFT detector
+# sift = cv2.SIFT()
+sift = cv2.xfeatures2d.SIFT_create()
+
+# find the keypoints and descriptors with SIFT
+kp1, des1 = sift.detectAndCompute(img1, None)
+kp2, des2 = sift.detectAndCompute(img2, None)
+
+# BFMatcher with default params
+bf = cv2.BFMatcher()
+matches = bf.knnMatch(des1, des2, k=2)
+
+# Apply ratio test
+good = []
+for m, n in matches:
+    if m.distance < 0.75 * n.distance:
+        good.append([m])
+
+# cv2.drawMatchesKnn expects list of lists as matches.
+img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good, img1, flags=2)
+
+cv2.imwrite('SIFT.png', img3)
+plt.imshow(img3), plt.show()
+
+```
+
